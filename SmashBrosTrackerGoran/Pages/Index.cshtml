@@ -1,0 +1,487 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Home page";
+}
+
+<div class="text-center header">
+    <h1>Smash Bros Tracker</h1>
+    <p>Track your wins and kebabs in Super Smash Bros Melee!</p>
+</div>
+
+<div class="container">
+    <!-- Player Forms Section -->
+    <div class="player-forms">
+        <form method="post" class="player-form">
+            <h3>Player 1</h3>
+            <label for="Player1NameInput">Player Name</label>
+            <select id="Player1NameInput" name="Player1Id" asp-for="Player1Id" required>
+                @foreach (var Player in Model.Players)
+                {
+                    <option value="@Player.Id">@Player.Name</option>
+                }
+            </select>
+
+            <label for="P1Select">Character</label>
+            <select id="P1Select" name="SelectedCharacter" asp-for="SelectedCharacterId" required>
+                @foreach (var Character in Model.Characters)
+                {
+                    <option value="@Character.Id" >@Character.Name</option>
+                }
+            </select>
+            
+        </form>
+
+        <form method="post" class="player-form">
+            <h3>Player 2</h3>
+            <label for="Player2NameInput">Player Name</label>
+            <select id="Player2NameInput" name="Player2Id" asp-for="Player2Id" required>
+                @foreach (var Player in Model.Players)
+                {
+                    <option value="@Player.Id">@Player.Name</option>
+                }
+            </select>
+
+            <label for="P2Select">Character</label>
+            <select id="P2Select" name="SelectedCharacter" asp-for="SelectedCharacterId" required>
+                @foreach (var Character in Model.Characters)
+                {
+                    <option value="@Character.Id" >@Character.Name</option>
+                }
+            </select>
+           
+
+        </form>
+    </div>
+
+    <!-- Leaderboard Section -->
+    <div class="leaderboard-container">
+        <div class="leaderboard">
+            <h2>Leaderboards</h2>
+            <table>
+                <tr>
+                    <th>Player</th>
+                    <th>Stars</th>
+                    <th>Kebabs Won</th> 
+                    <th> </th>
+                </tr>
+                @foreach (var Player in Model.Players)
+                {
+                    <tr>
+                        <td>@Player.Name</td>
+                        <td>@Player.TotalStars</td>
+                        <td>@Player.KebabsWon</td>
+                        <td>
+                            <form method="post" asp-page-handler="DeletePlayer" asp-route-id="@Player.Id">
+                                <input type="submit" value="Delete" class="delete-button">
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </table>
+        </div>
+
+        <!-- Add Player Section -->
+        <div class="add-player">
+            <form method="post" asp-page-handler="AddPlayerMethod" id="add-player-form">
+                <h3>Add Player</h3>
+                <label for="CreatePlayer">Player Name</label>
+                <input type="text" id="CreatePlayer" name="SelectedPlayerName" asp-for="SelectedPlayerName" required>
+                <span id="name-error" class="text-danger" style="display: none;">A player with this name already exists.</span>
+                <button type="submit">Add Player</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Start Session Button -->
+<div class="start-session-container">
+    <form method="post">
+        <input type="submit" value="Start Session" asp-page-handler="StartSession" class="start-session-button">
+    </form>
+</div>
+<div class="character-image-container">
+    <img id="P1CharacterImage" class="character-image" src="" alt="Player 1 Character">
+    <img id="P2CharacterImage" class="character-image" src="" alt="Player 2 Character">
+</div>
+
+
+<script>
+    
+
+    document.addEventListener("DOMContentLoaded", function () {
+        const player1Select = document.getElementById("Player1NameInput");
+        const player2Select = document.getElementById("Player2NameInput");
+
+        if (player1Select && player2Select) {
+            // Function to disable the selected option in the other dropdown
+            function updateDropdowns() {
+                const player1SelectedId = player1Select.value;
+                const player2SelectedId = player2Select.value;
+
+                // Enable all options in both dropdowns first
+                Array.from(player1Select.options).forEach(option => option.disabled = false);
+                Array.from(player2Select.options).forEach(option => option.disabled = false);
+
+                // Disable the selected option in the other dropdown
+                if (player1SelectedId) {
+                    const player1Option = player2Select.querySelector(`option[value="${player1SelectedId}"]`);
+                    if (player1Option) player1Option.disabled = true;
+                }
+
+                if (player2SelectedId) {
+                    const player2Option = player1Select.querySelector(`option[value="${player2SelectedId}"]`);
+                    if (player2Option) player2Option.disabled = true;
+                }
+            }
+
+            // Add event listeners to both dropdowns
+            player1Select.addEventListener("change", updateDropdowns);
+            player2Select.addEventListener("change", updateDropdowns);
+
+            // Initialize the dropdowns on page load
+            updateDropdowns();
+        }
+    });
+</script><!--Js for different players in session-->
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const addPlayerForm = document.getElementById("add-player-form");
+        const playerNameInput = document.getElementById("CreatePlayer");
+        const nameError = document.getElementById("name-error");
+
+        if (addPlayerForm) {
+            addPlayerForm.addEventListener("submit", function (event) {
+                event.preventDefault(); // Prevent default form submission
+
+                const playerName = playerNameInput.value.trim();
+
+                // Get the list of existing player names
+                const existingPlayerNames = Array.from(document.querySelectorAll("#Player1NameInput option, #Player2NameInput option"))
+                    .map(option => option.textContent.trim());
+
+                // Check if the player name already exists
+                if (existingPlayerNames.includes(playerName)) {
+                    nameError.style.display = "block"; // Show the error message
+                } else {
+                    nameError.style.display = "none"; // Hide the error message
+                    addPlayerForm.submit(); // Submit the form if the name is unique
+                }
+            });
+        }
+    });
+</script><!--JS for creating unique player names-->
+
+<style>
+    .character-image {
+        width: 500px; /* Fixed width */
+        height: auto; /* Height adjusts proportionally */
+        max-height: 250px; /* Optional maximum height */
+    }
+    /* General Styling */
+    body {
+        font-family: 'Arial', sans-serif;
+        margin: 0;
+        padding: 10px;
+        background: linear-gradient(135deg, #1a1a1a, #0d0d0d);
+        color: #fff;
+    }
+
+    .header h1 {
+        font-size: 2rem;
+        color: #ffcc00;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    }
+
+    .header p {
+        font-size: 1rem;
+        color: #ccc;
+    }
+
+    /* Container for Player Forms and Leaderboard */
+    .container {
+        display: flex;
+        gap: 15px;
+        margin-bottom: 15px;
+    }
+
+    /* Player Forms Section */
+    .player-forms {
+        flex: 2;
+        display: flex;
+        gap: 15px;
+    }
+
+    .player-form {
+        flex: 1;
+        padding: 10px;
+        background: rgba(255, 255, 255, 0.1);
+        border: 2px solid #ffcc00;
+        border-radius: 12px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        height: 200px;
+        display: flex;
+        flex-direction: column;
+    }
+
+        .player-form h3 {
+            color: #ffcc00;
+            margin-bottom: 8px;
+            font-size: 1.1rem;
+        }
+
+        .player-form label {
+            display: block;
+            margin-bottom: 4px;
+            font-weight: bold;
+            color: #ffcc00;
+        }
+
+        .player-form select,
+        .player-form input {
+            width: 100%;
+            padding: 5px;
+            margin-bottom: 6px;
+            border: 2px solid #ffcc00;
+            border-radius: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            font-size: 13px;
+        }
+
+        .player-form select {
+            flex-grow: 1;
+            overflow-y: auto;
+        }
+
+            .player-form select:focus,
+            .player-form input:focus {
+                outline: none;
+                border-color: #ff6666;
+                box-shadow: 0 0 8px rgba(255, 102, 102, 0.6);
+            }
+
+            .player-form select option {
+                background-color: #333;
+                color: #fff;
+            }
+
+                .player-form select option:hover {
+                    background-color: #ffcc00;
+                    color: #1a1a1a;
+                }
+
+    /* Leaderboard Container */
+    .leaderboard-container {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    /* Leaderboard Section */
+    .leaderboard {
+        padding: 15px;
+        background: rgba(255, 255, 255, 0.1);
+        border: 2px solid #ffcc00;
+        border-radius: 12px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+		position: relative;
+		left: 200px; /* Moves the leaderboard to the right */
+    }
+
+        .leaderboard h2 {
+            color: #ffcc00;
+            margin-bottom: 10px;
+            font-size: 1.2rem;
+        }
+
+        .leaderboard table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .leaderboard th,
+        .leaderboard td {
+            padding: 8px;
+            text-align: left;
+            border-bottom: 1px solid #ffcc00;
+            font-size: 13px;
+        }
+
+        .leaderboard th {
+            background-color: #ffcc00;
+            color: #1a1a1a;
+        }
+
+        .leaderboard tr:hover {
+            background-color: rgba(255, 204, 0, 0.1);
+        }
+
+    /* Add Player Section */
+    .add-player {
+        padding: 10px;
+        background: rgba(255, 255, 255, 0.1);
+        border: 2px solid #ffcc00;
+        border-radius: 12px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+		position: relative;
+        left: 200px; /* Moves the add player form to the right */
+    }
+
+        .add-player h3 {
+            color: #ffcc00;
+            margin-bottom: 8px;
+            font-size: 1.1rem;
+        }
+
+        .add-player label {
+            display: block;
+            margin-bottom: 4px;
+            font-weight: bold;
+            color: #ffcc00;
+        }
+
+        .add-player input {
+            width: 100%;
+            padding: 5px;
+            margin-bottom: 6px;
+            border: 2px solid #ffcc00;
+            border-radius: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            font-size: 13px;
+        }
+
+        .add-player button {
+            width: 100%;
+            padding: 6px 12px;
+            background-color: #ff6666;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: background-color 0.3s ease;
+        }
+
+            .add-player button:hover {
+                background-color: #ff3333;
+            }
+
+    /* Start Session Button Container */
+    .start-session-container {
+        width: 100%;
+        text-align: center;
+        margin-top: 15px;
+
+    }
+
+    /* Start Session Button */
+    .start-session-button {
+        padding: 12px 24px;
+        background-color: #ff4444;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 1.1rem;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        margin-top: 400px; /* Add margin-top to move the button 100 pixels down */
+    }
+    }
+
+        .start-session-button:hover {
+            background-color: #ff0000;
+        }
+
+    .delete-button {
+        padding: 4px 8px; /* Smaller padding */
+        background-color: #ff4444; /* Red background color */
+        color: white; /* White text color */
+        border: none; /* Remove default border */
+        border-radius: 4px; /* Slightly smaller rounded corners */
+        cursor: pointer; /* Pointer cursor on hover */
+        font-size: 0.8rem; /* Smaller font size */
+        transition: background-color 0.3s ease; /* Smooth transition for hover effect */
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Subtle shadow for depth */
+    }
+
+        .delete-button:hover {
+            background-color: #ff0000; /* Darker red on hover */
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3); /* Slightly larger shadow on hover */
+        }
+
+        .delete-button:active {
+            background-color: #cc0000; /* Even darker red when clicked */
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Reset shadow when clicked */
+        }
+
+    .character-image-container {
+        display: flex; /* Enables flexbox layout */
+        justify-content: center; /* Centers items horizontally */
+        gap: 10px; /* Adds space between images */
+		position: relative; /* Allows positioning of images */
+        margin-top: 20px; /* Space above the images */
+		bottom: 550px; /* Moves the images up */
+		right: 200px; /* Moves the images to the right */
+        /* Container border styles */
+        padding: 20px; /* Space between border and images */
+        border: 4px solid #ffcc00; /* Yellow border */
+        border-radius: 15px; /* Rounded corners */
+        background: rgba(0, 0, 0, 0.3); /* Semi-transparent background */
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+        width: fit-content; /* Container wraps content */
+        margin: 0 auto; /* Center horizontally */
+    }
+
+
+</style>
+<script>
+            const characterImages = {
+        // Map character IDs to image paths
+        // Example:
+        1: "/images/characters/fox.png",
+        2: "/images/characters/falco.png",
+        3:"/images/characters/marth.png",
+        4: "/images/characters/sheik.png",
+        5: "/images/characters/captainfalcon.png",
+        6: "/images/characters/peach.png",
+        7: "/images/characters/jigglypuff.png",
+        8: "/images/characters/luigi.png"
+        
+        // Add all your characters here
+    };
+
+    function updateCharacterImage(selectElementId, imageElementId) {
+        const select = document.getElementById(selectElementId);
+        const img = document.getElementById(imageElementId);
+
+        if (select && img) {
+            const characterId = select.value;
+            if (characterImages[characterId]) {
+                img.src = characterImages[characterId];
+                img.style.display = "block";
+            } else {
+                img.style.display = "none";
+            }
+        }
+    }
+
+    // Initialize and add event listeners
+    document.addEventListener("DOMContentLoaded", function() {
+        // Update images on load
+        updateCharacterImage("P1Select", "P1CharacterImage");
+        updateCharacterImage("P2Select", "P2CharacterImage");
+
+        // Update images when selection changes
+        document.getElementById("P1Select").addEventListener("change", function() {
+            updateCharacterImage("P1Select", "P1CharacterImage");
+        });
+
+        document.getElementById("P2Select").addEventListener("change", function() {
+            updateCharacterImage("P2Select", "P2CharacterImage");
+        });
+    });
+</script> <!--JS for showing images based on selected character-->
