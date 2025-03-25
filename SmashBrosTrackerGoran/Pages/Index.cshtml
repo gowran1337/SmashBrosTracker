@@ -24,7 +24,7 @@
             </select>
 
             <label for="P1Select">Character</label>
-            <select id="P1Select" name="SelectedCharacter" asp-for="SelectedCharacterId" required>
+            <select id="P1Select" name="SelectedCharacter" asp-for="SelectedCharacterId1" required>
                 @foreach (var Character in Model.Characters)
                 {
                     <option value="@Character.Id" >@Character.Name</option>
@@ -44,7 +44,7 @@
             </select>
 
             <label for="P2Select">Character</label>
-            <select id="P2Select" name="SelectedCharacter" asp-for="SelectedCharacterId" required>
+            <select id="P2Select" name="SelectedCharacter" asp-for="SelectedCharacterId2" required>
                 @foreach (var Character in Model.Characters)
                 {
                     <option value="@Character.Id" >@Character.Name</option>

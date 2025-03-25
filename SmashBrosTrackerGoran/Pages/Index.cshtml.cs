@@ -17,6 +17,8 @@ namespace SmashBrosTrackerGoran.Pages
         public int SelectedCharacterId { get; set; }
         public int Player1Id { get; set; }
         public int Player2Id { get; set; }
+        public int SelectedCharacterId1 { get; set; }
+        public int SelectedCharacterId2 { get; set; }
         [BindProperty]
         public string SelectedPlayerName { get; set; }
         
@@ -55,9 +57,15 @@ namespace SmashBrosTrackerGoran.Pages
             await _context.SaveChangesAsync();
             return RedirectToPage();
         }
-        public async Task<IActionResult> OnPostStartSession()
+        public IActionResult OnPostStartSession()
         {
-            return RedirectToPage("/SessionPage");
+            return RedirectToPage("/SessionPage", new
+            {
+                player1Id = Player1Id,
+                player2Id = Player2Id,
+                character1Id = SelectedCharacterId1,
+                character2Id = SelectedCharacterId2
+            });
         }
     }
 }
