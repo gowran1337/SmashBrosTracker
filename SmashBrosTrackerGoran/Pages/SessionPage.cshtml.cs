@@ -20,8 +20,7 @@ namespace SmashBrosTrackerGoran.Pages
         public List<Character> Characters { get; set; } = new List<Character>();
         public List<Player> Players { get; set; } = new List<Player>();
 
-        public async Task OnGetAsync(int player1Id, int player2Id,
-                               int character1Id, int character2Id)
+        public async Task OnGetAsync(int player1Id, int player2Id,int character1Id, int character2Id)
         {
             // Store the parameters in properties
             Player1Id = player1Id;

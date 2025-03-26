@@ -25,6 +25,7 @@
 
             <label for="P1Select">Character</label>
             <select id="P1Select" name="SelectedCharacter" asp-for="SelectedCharacterId1" required>
+                <option value="nochoice1" selected disabled>Choose an option</option>
                 @foreach (var Character in Model.Characters)
                 {
                     <option value="@Character.Id" >@Character.Name</option>
@@ -45,8 +46,10 @@
 
             <label for="P2Select">Character</label>
             <select id="P2Select" name="SelectedCharacter" asp-for="SelectedCharacterId2" required>
+                <option value="nochoice2" selected disabled>Choose an option</option>
                 @foreach (var Character in Model.Characters)
                 {
+                    
                     <option value="@Character.Id" >@Character.Name</option>
                 }
             </select>
@@ -101,9 +104,13 @@
         <input type="submit" value="Start Session" asp-page-handler="StartSession" class="start-session-button">
     </form>
 </div>
+
+
 <div class="character-image-container">
     <img id="P1CharacterImage" class="character-image" src="" alt="Player 1 Character">
+    <img id="VSImage" class="vs-image" src="/images/vs.png" alt="VS" style="display: none;">
     <img id="P2CharacterImage" class="character-image" src="" alt="Player 2 Character">
+    <img id="chooseCharacterImage" src="/images/choose.png" alt="Choose Your Character" class="choose-character-image" />
 </div>
 
 
@@ -174,10 +181,14 @@
 </script><!--JS for creating unique player names-->
 
 <style>
+    .vs-image {
+        transform: scale(0.5);
+    }
     .character-image {
-        width: 500px; /* Fixed width */
-        height: auto; /* Height adjusts proportionally */
+		transform: scale(1.3);
         max-height: 250px; /* Optional maximum height */
+        margin-left: -120px; /* Pulls images even closer */
+        margin-right: -120px; /* Overlaps them slightly */
     }
     /* General Styling */
     body {
@@ -422,67 +433,74 @@
     .character-image-container {
         display: flex; /* Enables flexbox layout */
         justify-content: center; /* Centers items horizontally */
-        gap: 10px; /* Adds space between images */
+
 		position: relative; /* Allows positioning of images */
         margin-top: 20px; /* Space above the images */
 		bottom: 550px; /* Moves the images up */
 		right: 200px; /* Moves the images to the right */
         /* Container border styles */
-        padding: 20px; /* Space between border and images */
-        border: 4px solid #ffcc00; /* Yellow border */
+        width: max-content;
+        
         border-radius: 15px; /* Rounded corners */
         background: rgba(0, 0, 0, 0.3); /* Semi-transparent background */
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
-        width: fit-content; /* Container wraps content */
+         /* Container wraps content */
         margin: 0 auto; /* Center horizontally */
     }
 
 
 </style>
 <script>
-            const characterImages = {
-        // Map character IDs to image paths
-        // Example:
-        1: "/images/characters/fox.png",
-        2: "/images/characters/falco.png",
-        3:"/images/characters/marth.png",
-        4: "/images/characters/sheik.png",
-        5: "/images/characters/captainfalcon.png",
-        6: "/images/characters/peach.png",
-        7: "/images/characters/jigglypuff.png",
-        8: "/images/characters/luigi.png"
-        
-        // Add all your characters here
-    };
+              document.addEventListener("DOMContentLoaded", function () {
+        const characterImages = {
+            1: "/images/characters/fox.png",
+            2: "/images/characters/falco.png",
+            3: "/images/characters/marth.png",
+            4: "/images/characters/sheik.png",
+            5: "/images/characters/captainfalcon.png",
+            6: "/images/characters/peach.png",
+            7: "/images/characters/jigglypuff.png",
+            8: "/images/characters/luigi.png"
+        };
 
-    function updateCharacterImage(selectElementId, imageElementId) {
-        const select = document.getElementById(selectElementId);
-        const img = document.getElementById(imageElementId);
+        function updateCharacterImages() {
+            const p1Select = document.getElementById("P1Select");
+            const p2Select = document.getElementById("P2Select");
+            const p1Img = document.getElementById("P1CharacterImage");
+            const p2Img = document.getElementById("P2CharacterImage");
+            const vsImg = document.getElementById("VSImage");
+            const chooseCharacterImage = document.getElementById("chooseCharacterImage");
 
-        if (select && img) {
-            const characterId = select.value;
-            if (characterImages[characterId]) {
-                img.src = characterImages[characterId];
-                img.style.display = "block";
+            const p1CharacterId = p1Select.value;
+            const p2CharacterId = p2Select.value;
+
+            if (characterImages[p1CharacterId] && characterImages[p2CharacterId]) {
+                // Hide the "Choose Your Character" image when both players have selected characters
+                chooseCharacterImage.style.display = "none";
+
+                // Show character images for both players
+                p1Img.src = characterImages[p1CharacterId];
+                p2Img.src = characterImages[p2CharacterId];
+
+                p1Img.style.display = "block";
+                p2Img.style.display = "block";
+
+                // Show the "VS" image
+                vsImg.style.display = "block";
             } else {
-                img.style.display = "none";
+                // If either player has not selected a character, hide all images
+                p1Img.style.display = "none";
+                p2Img.style.display = "none";
+                vsImg.style.display = "none";
+
+                // Show the "Choose Your Character" image when either player hasn't selected
+                chooseCharacterImage.style.display = "block";
             }
         }
-    }
 
-    // Initialize and add event listeners
-    document.addEventListener("DOMContentLoaded", function() {
-        // Update images on load
-        updateCharacterImage("P1Select", "P1CharacterImage");
-        updateCharacterImage("P2Select", "P2CharacterImage");
-
-        // Update images when selection changes
-        document.getElementById("P1Select").addEventListener("change", function() {
-            updateCharacterImage("P1Select", "P1CharacterImage");
-        });
-
-        document.getElementById("P2Select").addEventListener("change", function() {
-            updateCharacterImage("P2Select", "P2CharacterImage");
-        });
+        // Listen for changes in character selections
+        document.getElementById("P1Select").addEventListener("change", updateCharacterImages);
+        document.getElementById("P2Select").addEventListener("change", updateCharacterImages);
     });
+
 </script> <!--JS for showing images based on selected character-->
