@@ -13,7 +13,7 @@
 <div class="container">
     <!-- Player Forms Section -->
     <div class="player-forms">
-        <form method="post" class="player-form">
+        <form method="post" class="player-form" id="form1">
             <h3>Player 1</h3>
             <label for="Player1NameInput">Player Name</label>
             <select id="Player1NameInput" name="Player1Id" asp-for="Player1Id" required>
@@ -24,7 +24,7 @@
             </select>
 
             <label for="P1Select">Character</label>
-            <select id="P1Select" name="SelectedCharacter" asp-for="SelectedCharacterId1" required>
+            <select id="P1Select" name="SelectedCharacter" asp-for="Player1Character" required>
                 <option value="nochoice1" selected disabled>Choose an option</option>
                 @foreach (var Character in Model.Characters)
                 {
@@ -34,7 +34,7 @@
             
         </form>
 
-        <form method="post" class="player-form">
+        <form method="post" class="player-form" id="form2">
             <h3>Player 2</h3>
             <label for="Player2NameInput">Player Name</label>
             <select id="Player2NameInput" name="Player2Id" asp-for="Player2Id" required>
@@ -45,7 +45,7 @@
             </select>
 
             <label for="P2Select">Character</label>
-            <select id="P2Select" name="SelectedCharacter" asp-for="SelectedCharacterId2" required>
+            <select id="P2Select" name="SelectedCharacter" asp-for="Player2Character" required>
                 <option value="nochoice2" selected disabled>Choose an option</option>
                 @foreach (var Character in Model.Characters)
                 {
@@ -100,9 +100,9 @@
 
 <!-- Start Session Button -->
 <div class="start-session-container">
-    <form method="post">
-        <input type="submit" value="Start Session" asp-page-handler="StartSession" class="start-session-button">
-    </form>
+
+	<button type="submit" value="Start Session" asp-page-handler="StartSession" form="form1" class="start-session-button">Start Session</button>
+    
 </div>
 
 
@@ -111,7 +111,7 @@
     <img id="VSImage" class="vs-image" src="/images/vs.png" alt="VS" style="display: none;">
     <img id="P2CharacterImage" class="character-image" src="" alt="Player 2 Character">
     <img id="chooseCharacterImage" src="/images/choose.png" alt="Choose Your Character" class="choose-character-image" />
-</div>
+</div><
 
 
 <script>
@@ -504,3 +504,14 @@
     });
 
 </script> <!--JS for showing images based on selected character-->
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const startSessionButton = document.querySelector(".start-session-button");
+        startSessionButton.addEventListener("click", function () {
+            document.getElementById("Player1Id").value = document.getElementById("Player1NameInput").value;
+            document.getElementById("Player2Id").value = document.getElementById("Player2NameInput").value;
+            document.getElementById("Player1CharacterId").value = document.getElementById("P1Select").value;
+            document.getElementById("Player2CharacterId").value = document.getElementById("P2Select").value;
+        });
+    });
+</script>

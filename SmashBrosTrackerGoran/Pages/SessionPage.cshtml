@@ -1,7 +1,20 @@
 ﻿@page
 @model SmashBrosTrackerGoran.Pages.SessionPageModel
 @{
-	<h1>zerbi</h1>
-
-	
+    ViewData["Title"] = "Session Page";
 }
+
+<h1>Session Details</h1>
+
+<div>
+    <h2>Player 1</h2>
+    <p>Name: @Model.Player1?.Name</p>
+    <p>Character: @Model.Player1Character?.Name</p>
+    
+
+<div>
+    <h2>Player 2</h2>
+    <p>Name: @Model.Player2?.Name</p>
+    <p>Character: @Model.Player2Character?.Name</p>
+   
+</div>

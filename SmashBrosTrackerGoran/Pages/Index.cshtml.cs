@@ -13,12 +13,12 @@ namespace SmashBrosTrackerGoran.Pages
         {
             _context = context;
         }
-        [BindProperty]
-        public int SelectedCharacterId { get; set; }
+        
+      
         public int Player1Id { get; set; }
         public int Player2Id { get; set; }
-        public int SelectedCharacterId1 { get; set; }
-        public int SelectedCharacterId2 { get; set; }
+        public int Player1Character { get; set; }
+        public int Player2Character { get; set; }
         [BindProperty]
         public string SelectedPlayerName { get; set; }
         
@@ -57,15 +57,9 @@ namespace SmashBrosTrackerGoran.Pages
             await _context.SaveChangesAsync();
             return RedirectToPage();
         }
-        public IActionResult OnPostStartSession()
+        public IActionResult OnPostStartSession(int Player1Id, int Player2Id, int Player1CharacterId, int Player2CharacterId)
         {
-            return RedirectToPage("/SessionPage", new
-            {
-                player1Id = Player1Id,
-                player2Id = Player2Id,
-                character1Id = SelectedCharacterId1,
-                character2Id = SelectedCharacterId2
-            });
+            return Redirect($"/SessionPage?Player1Id={Player1Id}&Player2Id={Player2Id}&Player1CharacterId={Player1CharacterId}&Player2CharacterId={Player2CharacterId}");
         }
     }
 }
