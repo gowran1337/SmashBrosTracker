@@ -13,18 +13,21 @@ namespace SmashBrosTrackerGoran.Pages
         {
             _context = context;
         }
-        
-      
+
+        [BindProperty]
         public int Player1Id { get; set; }
+        [BindProperty]
         public int Player2Id { get; set; }
-        public int Player1Character { get; set; }
-        public int Player2Character { get; set; }
+        [BindProperty]
+        public int Player1CharacterId { get; set; }
+        [BindProperty]
+        public int Player2CharacterId { get; set; }
         [BindProperty]
         public string SelectedPlayerName { get; set; }
-        
 
+        public Character Character { get; set; }
         public Player Player { get; set; }
-        public List<Character> Characters { get; set; } = new List<Character>(); 
+        public List<Character> Characters { get; set; } = new List<Character>();
         public List<Player> Players { get; set; } = new List<Player>();
 
         public async Task OnGetAsync()// get the characters and players from the database and put them in the list
@@ -45,7 +48,7 @@ namespace SmashBrosTrackerGoran.Pages
         }
 
         public async Task<IActionResult> OnPostAddPlayerMethod()
-        {          
+        {
             Player = new Player
             {
                 Name = SelectedPlayerName,
@@ -57,9 +60,18 @@ namespace SmashBrosTrackerGoran.Pages
             await _context.SaveChangesAsync();
             return RedirectToPage();
         }
-        public IActionResult OnPostStartSession(int Player1Id, int Player2Id, int Player1CharacterId, int Player2CharacterId)
+        public IActionResult OnPostStartSession()
         {
-            return Redirect($"/SessionPage?Player1Id={Player1Id}&Player2Id={Player2Id}&Player1CharacterId={Player1CharacterId}&Player2CharacterId={Player2CharacterId}");
+            // Handle the form submission
+            // Access Player1Id, Player2Id, Player1Character, Player2Character here
+
+            return RedirectToPage("/SessionPage", new
+            {
+                player1Id = Player1Id,
+                player2Id = Player2Id,
+                player1CharacterId = Player1CharacterId,
+                player2CharacterId = Player2CharacterId
+            });
         }
     }
 }
