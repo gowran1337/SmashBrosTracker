@@ -62,6 +62,7 @@ namespace SmashBrosTrackerGoran.Data
                 .WithMany() // A Player can win many Sessions
                 .HasForeignKey(s => s.WinnerId) // Foreign key to Player (Winner)
                 .OnDelete(DeleteBehavior.Restrict); // Prevent cascade delete
+
         }
 
     }

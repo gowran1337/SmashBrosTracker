@@ -15,6 +15,18 @@
     <h2>Player 2</h2>
     <p>Name: @Model.Player2.Name</p>
     <p>Character: @Model.Player2Character.Name</p>
-   
 </div>
+
+<form method="post" asp-page-handler="addSession">
+    <label for="P1stars">P1Stars</label>
+    <input type="number" id="P1stars" name="P1stars" asp-for="Player1Stars" required>
+
+    <label for="P2stars">P2Stars</label>
+    <input type="number" id="P2stars" name="P2stars" asp-for="Player2Stars" required>
+    <button type="submit">End session</button>
+</form>
+
+<button>Player 1 add kebab</button>
+<button>Player 2 add kebab</button>
+
 

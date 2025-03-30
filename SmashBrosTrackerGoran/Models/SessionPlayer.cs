@@ -1,4 +1,6 @@
-﻿namespace SmashBrosTrackerGoran.Models
+﻿using Microsoft.EntityFrameworkCore;
+
+namespace SmashBrosTrackerGoran.Models
 {
     public class SessionPlayer
     {
@@ -7,6 +9,8 @@
 
         public int PlayerId { get; set; }
         public Player Player { get; set; }
+        public int CharacterId { get; set; } // New property
+        public Character Character { get; set; } // Navigation property
 
         public int StarsEarned { get; set; }
     }
