@@ -23,44 +23,119 @@ namespace SmashBrosTrackerGoran.Pages
         [BindProperty]
         public int Player1Stars { get; set; }
         [BindProperty]
-        public int Player2Stars { get; set; }
+        public int Player2Stars { get; set; }   
+        [BindProperty]
+        public int Player1Kebabs { get; set; }
+        [BindProperty]
+        public int Player2Kebabs { get; set; }
+        [BindProperty]
+        public int PlayerKebabs { get; set; }
 
         public Player Player1 { get; set; }
         public Player Player2 { get; set; }
         public Character Player1Character { get; set; }
         public Character Player2Character { get; set; }
 
-       
-        public void OnGet(int Player1Id, int Player2Id, int Player1CharacterId, int Player2CharacterId) //gets the selected players and characters from th
+        public async Task<IActionResult> OnGetAsync(int Player1Id, int Player2Id, int Player1CharacterId, int Player2CharacterId)
         {
-            this.Player1Id = Player1Id;
-            this.Player2Id = Player2Id;
-            this.Player1CharacterId = Player1CharacterId;
-            this.Player2CharacterId = Player2CharacterId;
+            try
+            {
+                this.Player1Id = Player1Id;
+                this.Player2Id = Player2Id;
+                this.Player1CharacterId = Player1CharacterId;
+                this.Player2CharacterId = Player2CharacterId;
 
-            Player1 = _dbContext.Players.FirstOrDefault(p => p.Id == Player1Id) ?? new Player { Name = "Player 1" };
-            Player2 = _dbContext.Players.FirstOrDefault(p => p.Id == Player2Id) ?? new Player { Name = "Player 2 zebri" };
-            Player1Character = _dbContext.Characters.FirstOrDefault(c => c.Id == Player1CharacterId) ?? new Character { Name = "Unknown" };
-            Player2Character = _dbContext.Characters.FirstOrDefault(c => c.Id == Player2CharacterId) ?? new Character { Name = "Unknown" };
+                // Check if players exist
+                Player1 = await _dbContext.Players.FindAsync(Player1Id);
+                Player2 = await _dbContext.Players.FindAsync(Player2Id);
+
+                // If either player doesn't exist, redirect to index
+                if (Player1 == null || Player2 == null)
+                {
+                    return RedirectToPage("Index");
+                }
+
+                // Check if characters exist
+                Player1Character = await _dbContext.Characters.FindAsync(Player1CharacterId);
+                Player2Character = await _dbContext.Characters.FindAsync(Player2CharacterId);
+
+                // If either character doesn't exist, redirect to index
+                if (Player1Character == null || Player2Character == null)
+                {
+                    return RedirectToPage("Index");
+                }
+
+                return Page();
+            }
+            catch (Exception)
+            {
+                return RedirectToPage("Index");
+            }
         }
 
         public async Task<IActionResult> OnPostAddSession()
         {
-            var session = new Session
+            try
             {
-                SessionPlayers = new List<SessionPlayer> 
+                // First verify that both players exist
+                var player1 = await _dbContext.Players.FindAsync(Player1Id);
+                var player2 = await _dbContext.Players.FindAsync(Player2Id);
+
+                if (player1 == null || player2 == null)
                 {
-                    new SessionPlayer { PlayerId = Player1Id, CharacterId = Player1CharacterId, StarsEarned = Player1Stars },
-                    new SessionPlayer { PlayerId = Player2Id, CharacterId = Player2CharacterId, StarsEarned = Player2Stars }
-                },
-                Date = DateTime.Now,
-                WinnerId = Player1Stars > Player2Stars ? Player1Id : Player2Id // Ternary operator:
+                    // Handle the case where one or both players don't exist
+                    return RedirectToPage("Index");
+                }
 
-            };
+                // First create the session
+                var session = new Session
+                {
+                    Date = DateTime.Now,
+                    WinnerId = Player1Stars > Player2Stars ? Player1Id : Player2Id
+                };
 
-            _dbContext.Sessions.Add(session);
-            await _dbContext.SaveChangesAsync();
-            return RedirectToPage("Index"); // Redirects after saving
+                // Add the session to the context first
+                _dbContext.Sessions.Add(session);
+                await _dbContext.SaveChangesAsync();
+
+                // Now create the session players with the session ID
+                var sessionPlayer1 = new SessionPlayer
+                {
+                    SessionId = session.Id,
+                    PlayerId = Player1Id,
+                    CharacterId = Player1CharacterId,
+                    StarsEarned = Player1Stars,
+                    
+                };
+
+                var sessionPlayer2 = new SessionPlayer
+                {
+                    SessionId = session.Id,
+                    PlayerId = Player2Id,
+                    CharacterId = Player2CharacterId,
+                    StarsEarned = Player2Stars,
+                    
+                };
+
+                // Add the session players
+                _dbContext.SessionPlayers.Add(sessionPlayer1);
+                _dbContext.SessionPlayers.Add(sessionPlayer2);
+                
+                player1.TotalStars += Player1Stars;
+                player2.TotalStars += Player2Stars;
+                player1.KebabsWon += Player1Kebabs;
+                player2.KebabsWon += Player2Kebabs;
+
+
+                await _dbContext.SaveChangesAsync();
+                return RedirectToPage("Index");
+            }
+            catch (Exception ex)
+            {
+                // Log the error and redirect to index
+                // You might want to add proper error logging here
+                return RedirectToPage("Index");
+            }
         }
     }
 }

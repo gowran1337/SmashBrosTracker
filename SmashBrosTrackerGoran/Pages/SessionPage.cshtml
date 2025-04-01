@@ -6,27 +6,94 @@
 
 <h1>Session Details</h1>
 
-<div>
-    <h2>Player 1</h2>
-    <p>Name: @Model.Player1.Name</p>
-    <p>Character: @Model.Player1Character.Name</p>
-</div>
-<div>
-    <h2>Player 2</h2>
-    <p>Name: @Model.Player2.Name</p>
-    <p>Character: @Model.Player2Character.Name</p>
-</div>
+@if (Model.Player1 != null && Model.Player2 != null && Model.Player1Character != null && Model.Player2Character != null)
+{
+    <div>
+        <h2>Player 1</h2>
+        <p>Name: @Model.Player1.Name</p>
+        <p>Character: @Model.Player1Character.Name</p>
 
-<form method="post" asp-page-handler="addSession">
-    <label for="P1stars">P1Stars</label>
-    <input type="number" id="P1stars" name="P1stars" asp-for="Player1Stars" required>
+        <button id="addp1Kebab">Add Kebab</button>
+        <p id="p1kebabdisplay"></p>
 
-    <label for="P2stars">P2Stars</label>
-    <input type="number" id="P2stars" name="P2stars" asp-for="Player2Stars" required>
-    <button type="submit">End session</button>
-</form>
+    </div>
+    <div>
+        <h2>Player 2</h2>
+        <p>Name: @Model.Player2.Name</p>
+        <p>Character: @Model.Player2Character.Name</p>
 
-<button>Player 1 add kebab</button>
-<button>Player 2 add kebab</button>
+        <button id="addp2Kebab">Add Kebab</button>
+        <p id="p2kebabdisplay"></p>
+
+    </div>
+    <div>
+        <h3>kebabs</h3>
+        <p id="scoreboardDisplay"></p>
+    </div>
+
+    <form method="post" asp-page-handler="AddSession">
+        <input type="hidden" asp-for="Player1Id" />
+        <input type="hidden" asp-for="Player2Id" />
+        <input type="hidden" asp-for="Player1CharacterId" />
+        <input type="hidden" asp-for="Player2CharacterId" />
+        <input type="hidden" id="p1kebabCount" name="Player1Kebabs" asp-for="Player1Kebabs" value="0">
+        <input type="hidden" id="p2kebabCount" name="Player2Kebabs" asp-for="Player2Kebabs" value="0">
+
+        <label for="Player1Stars">Player 1 Stars</label>
+        <input type="number" id="Player1Stars" name="Player1Stars" asp-for="Player1Stars" required>
+
+        <label for="Player2Stars">Player 2 Stars</label>
+        <input type="number" id="Player2Stars" name="Player2Stars" asp-for="Player2Stars" required>
+        <button type="submit">End session</button>
+    </form>
+
+   
+}
+else
+{
+    <p>Error: Invalid player or character selection. Please try again.</p>
+    <a asp-page="Index" class="btn btn-primary">Return to Index</a>
+}
+
+
+
+<script>
+     document.addEventListener("DOMContentLoaded", function() {
+    let p1kebab = 0;
+    let p2kebab = 0;
+
+    const p1Button = document.getElementById("addp1Kebab");
+    const p2Button = document.getElementById("addp2Kebab");
+    const p1Display = document.getElementById("p1kebabdisplay");
+    const p2Display = document.getElementById("p2kebabdisplay");
+    const scoreboardDisplay = document.getElementById("scoreboardDisplay");
+    // Get the hidden inputs
+    const p1KebabInput = document.getElementById("p1kebabCount");
+    const p2KebabInput = document.getElementById("p2kebabCount");
+
+    function updateKebabs() {
+        p1Display.textContent = p1kebab + " kebabs";
+        p2Display.textContent = p2kebab + " kebabs";
+        scoreboardDisplay.textContent = `Score:${p1kebab} - ${p2kebab}`;
+        // Update the hidden form inputs
+        p1KebabInput.value = p1kebab;
+        p2KebabInput.value = p2kebab;
+    }
+
+    p1Button.addEventListener("click", function() {
+        p1kebab++;
+        updateKebabs();
+    });
+
+    p2Button.addEventListener("click", function() {
+        p2kebab++;
+        updateKebabs();
+    });
+
+    // Initialize displays
+    updateKebabs();
+});
+</script>
+
 
 

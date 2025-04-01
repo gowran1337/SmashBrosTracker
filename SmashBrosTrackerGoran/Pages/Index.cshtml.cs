@@ -71,14 +71,13 @@ namespace SmashBrosTrackerGoran.Pages
             return RedirectToPage();
         }
         public IActionResult OnPostStartSession()
-        {           
-
+        {
             return RedirectToPage("/SessionPage", new
             {
-                player1Id = Player1Id,
-                player2Id = Player2Id,
-                player1CharacterId = Player1CharacterId,
-                player2CharacterId = Player2CharacterId
+                Player1Id = Player1Id,
+                Player2Id = Player2Id,
+                Player1CharacterId = Player1CharacterId,
+                Player2CharacterId = Player2CharacterId
             });
         }
      

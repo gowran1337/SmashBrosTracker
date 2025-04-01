@@ -13,5 +13,6 @@ namespace SmashBrosTrackerGoran.Models
         public Character Character { get; set; } // Navigation property
 
         public int StarsEarned { get; set; }
+        
     }
 }
