@@ -10,7 +10,7 @@
 </div>
 
 <div class="container">
-    <!-- Combined Player Form Section -->
+    <!-- Player Forms -->
     <div class="player-forms">
         <form method="post" asp-page-handler="StartSession" id="sessionForm" class="combined-form">
             <div class="player-form-section">
@@ -61,10 +61,19 @@
         </form>
     </div>
 
- 
-</div>
+    <!-- Character Display Section -->
+    <div class="character-display">
+        <div class="character-images">
+            <div class="character-image-container">
+                <img id="P1CharacterImage" class="character-image" src="" alt="Player 1 Character" style="display: none;">
+                <img id="VSImage" class="vs-image" src="/images/vs.png" alt="VS" style="display: none;">
+                <img id="P2CharacterImage" class="character-image" src="" alt="Player 2 Character" style="display: none;">
+                <img id="chooseCharacterImage" src="/images/choose.png" alt="Choose Your Character" class="choose-character-image" />
+            </div>
+        </div>
+    </div>
 
-    <!-- Leaderboard Section -->
+    <!-- Leaderboard -->
     <div class="leaderboard-container">
         <div class="leaderboard">
             <h2>Leaderboards</h2>
@@ -98,10 +107,11 @@
                 <label for="CreatePlayer">Player Name</label>
                 <input type="text" id="CreatePlayer" name="SelectedPlayerName" asp-for="SelectedPlayerName" required>
                 <span id="name-error" class="text-danger" style="display: none;">A player with this name already exists.</span>
-                <button type="submit">Add Player</button>
+                <button type="submit" class="add-player-button">Add Player</button>
             </form>
         </div>
     </div>
+</div>
 
 <h2>Sessions</h2>
 
@@ -130,5 +140,88 @@
     </tbody>
 </table>
 
-<script src="~/js/site.js"></script>
+<script>
+    console.log('Script starting...');
+    
+    document.addEventListener("DOMContentLoaded", function () {
+        console.log('DOM Content Loaded');
+        
+        const characterImages = {
+            1: "/images/characters/fox.png",
+            2: "/images/characters/falco.png",
+            3: "/images/characters/marth.png",
+            4: "/images/characters/sheik.png",
+            5: "/images/characters/captainfalcon.png",
+            6: "/images/characters/peach.png",
+            7: "/images/characters/jigglypuff.png",
+            8: "/images/characters/luigi.png"
+        };
+
+        console.log('Character images object:', characterImages);
+
+        function updateCharacterImages() {
+            console.log('updateCharacterImages function called');
+            
+            const p1Select = document.getElementById("P1Select");
+            const p2Select = document.getElementById("P2Select");
+            const p1Img = document.getElementById("P1CharacterImage");
+            const p2Img = document.getElementById("P2CharacterImage");
+            const vsImg = document.getElementById("VSImage");
+            const chooseCharacterImage = document.getElementById("chooseCharacterImage");
+
+            console.log('Found elements:', {
+                p1Select: p1Select,
+                p2Select: p2Select,
+                p1Img: p1Img,
+                p2Img: p2Img,
+                vsImg: vsImg,
+                chooseCharacterImage: chooseCharacterImage
+            });
+
+            const p1CharacterId = p1Select.value;
+            const p2CharacterId = p2Select.value;
+
+            console.log('Selected character IDs:', {
+                p1: p1CharacterId,
+                p2: p2CharacterId
+            });
+
+            if (characterImages[p1CharacterId] && characterImages[p2CharacterId]) {
+                console.log('Both characters selected, showing images');
+                chooseCharacterImage.style.display = "none";
+                p1Img.src = characterImages[p1CharacterId];
+                p2Img.src = characterImages[p2CharacterId];
+                p1Img.style.display = "block";
+                p2Img.style.display = "block";
+                vsImg.style.display = "block";
+            } else {
+                console.log('One or both characters not selected, showing choose image');
+                p1Img.style.display = "none";
+                p2Img.style.display = "none";
+                vsImg.style.display = "none";
+                chooseCharacterImage.style.display = "block";
+            }
+        }
+
+        const p1Select = document.getElementById("P1Select");
+        const p2Select = document.getElementById("P2Select");
+
+        console.log('Adding event listeners to:', {
+            p1Select: p1Select,
+            p2Select: p2Select
+        });
+
+        p1Select.addEventListener("change", function() {
+            console.log('P1 selection changed');
+            updateCharacterImages();
+        });
+
+        p2Select.addEventListener("change", function() {
+            console.log('P2 selection changed');
+            updateCharacterImages();
+        });
+
+        console.log('Event listeners added');
+    });
+</script>
 
