@@ -84,6 +84,8 @@ document.addEventListener("DOMContentLoaded", function () {
         const p2Img = document.getElementById("P2CharacterImage");
         const vsImg = document.getElementById("VSImage");
         const chooseCharacterImage = document.getElementById("chooseCharacterImage");
+        const characterContainer = document.querySelector(".character-image-container");
+
 
         const p1CharacterId = p1Select.value;
         const p2CharacterId = p2Select.value;
@@ -101,6 +103,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
             // Show the "VS" image
             vsImg.style.display = "block";
+             
         } else {
             // If either player has not selected a character, hide all images
             p1Img.style.display = "none";
@@ -109,6 +112,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
             // Show the "Choose Your Character" image when either player hasn't selected
             chooseCharacterImage.style.display = "block";
+            characterContainer.style.display = "none"; // To show
         }
     }
 

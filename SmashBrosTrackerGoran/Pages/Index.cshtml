@@ -2,6 +2,17 @@
 @model IndexModel
 @{
     ViewData["Title"] = "Home page";
+    var characterIcons = new Dictionary<int, string>
+    {
+        { 1, "foxhead.png" },
+        { 2, "falcohead.png" },
+        { 3, "marthhead.png" },
+        { 4, "sheikhead.png" },
+        { 5, "falconhead.png" },
+        { 6, "peachhead.png" },
+        { 7, "jigglypuffhead.png" },
+        { 8, "luigihead.png" }
+    };
 }
 
 <div class="text-center header">
@@ -63,12 +74,12 @@
 
     <!-- Character Display Section -->
     <div class="character-display">
+        <img id="chooseCharacterImage" src="/images/choose.png" alt="Choose Your Character" class="choose-character-image" />
         <div class="character-images">
             <div class="character-image-container">
                 <img id="P1CharacterImage" class="character-image" src="" alt="Player 1 Character" style="display: none;">
                 <img id="VSImage" class="vs-image" src="/images/vs.png" alt="VS" style="display: none;">
                 <img id="P2CharacterImage" class="character-image" src="" alt="Player 2 Character" style="display: none;">
-                <img id="chooseCharacterImage" src="/images/choose.png" alt="Choose Your Character" class="choose-character-image" />
             </div>
         </div>
     </div>
@@ -113,39 +124,41 @@
     </div>
 </div>
 
-<h2>Sessions</h2>
-
-<table>
-    <thead>
-        <tr>
-            <th>Date</th>
-            <th>Player</th>
-            <th>Character</th>
-            <th>Stars Earned</th>
-        </tr>
-    </thead>
-    <tbody>
+<div class="sessions-section">
+    <h2>Session History</h2>
+    <div class="sessions-list">
         @foreach (var session in Model.Sessions)
         {
-            foreach (var player in session.SessionPlayers)
+            @if (session.SessionPlayers.Count >= 2)
             {
-                <tr>
-                    <td>@session.Date.ToString("yyyy-MM-dd HH:mm")</td>
-                    <td>@player.Player.Name</td>
-                    <td>@player.Character.Name</td>
-                    <td>@player.StarsEarned</td>
-                </tr>
+                var player1 = session.SessionPlayers.First();
+                var player2 = session.SessionPlayers.Last();
+                var winner = player1.StarsEarned > player2.StarsEarned ? player1 : player2;
+                var loser = player1.StarsEarned > player2.StarsEarned ? player2 : player1;
+                <div class="session-card">
+                    <div class="session-date">@session.Date.ToString("MM-dd HH:mm")</div>
+                    <div class="session-match">
+                        <div class="session-player winner">
+                            <span class="session-player-name">@winner.Player.Name</span>
+                            <img src="/images/icons/@characterIcons[winner.Character.Id]" alt="@winner.Character.Name" class="session-character-icon">
+                        </div>
+                        <div class="session-player loser">
+                            <span class="session-player-name">@loser.Player.Name</span>
+                            <img src="/images/icons/@characterIcons[loser.Character.Id]" alt="@loser.Character.Name" class="session-character-icon">
+                        </div>
+                    </div>
+                    <div class="session-score">
+                        <span class="winner"> Score: @winner.StarsEarned -</span>
+                        <span class="loser">@loser.StarsEarned</span>
+                    </div>
+                </div>
             }
         }
-    </tbody>
-</table>
+    </div>
+</div>
 
 <script>
-    console.log('Script starting...');
-    
     document.addEventListener("DOMContentLoaded", function () {
-        console.log('DOM Content Loaded');
-        
         const characterImages = {
             1: "/images/characters/fox.png",
             2: "/images/characters/falco.png",
@@ -157,71 +170,44 @@
             8: "/images/characters/luigi.png"
         };
 
-        console.log('Character images object:', characterImages);
-
         function updateCharacterImages() {
-            console.log('updateCharacterImages function called');
-            
             const p1Select = document.getElementById("P1Select");
             const p2Select = document.getElementById("P2Select");
             const p1Img = document.getElementById("P1CharacterImage");
             const p2Img = document.getElementById("P2CharacterImage");
             const vsImg = document.getElementById("VSImage");
             const chooseCharacterImage = document.getElementById("chooseCharacterImage");
-
-            console.log('Found elements:', {
-                p1Select: p1Select,
-                p2Select: p2Select,
-                p1Img: p1Img,
-                p2Img: p2Img,
-                vsImg: vsImg,
-                chooseCharacterImage: chooseCharacterImage
-            });
+            const characterContainer = document.querySelector(".character-image-container");
 
             const p1CharacterId = p1Select.value;
             const p2CharacterId = p2Select.value;
 
-            console.log('Selected character IDs:', {
-                p1: p1CharacterId,
-                p2: p2CharacterId
-            });
-
             if (characterImages[p1CharacterId] && characterImages[p2CharacterId]) {
-                console.log('Both characters selected, showing images');
-                chooseCharacterImage.style.display = "none";
+                // Show the container and character images
+                characterContainer.classList.add("visible");
+                chooseCharacterImage.classList.add("hidden");
+
+                // Set character images
                 p1Img.src = characterImages[p1CharacterId];
                 p2Img.src = characterImages[p2CharacterId];
                 p1Img.style.display = "block";
                 p2Img.style.display = "block";
                 vsImg.style.display = "block";
             } else {
-                console.log('One or both characters not selected, showing choose image');
+                // Hide the container and show choose image
+                characterContainer.classList.remove("visible");
+                chooseCharacterImage.classList.remove("hidden");
+
+                // Hide character images
                 p1Img.style.display = "none";
                 p2Img.style.display = "none";
                 vsImg.style.display = "none";
-                chooseCharacterImage.style.display = "block";
             }
         }
 
-        const p1Select = document.getElementById("P1Select");
-        const p2Select = document.getElementById("P2Select");
-
-        console.log('Adding event listeners to:', {
-            p1Select: p1Select,
-            p2Select: p2Select
-        });
-
-        p1Select.addEventListener("change", function() {
-            console.log('P1 selection changed');
-            updateCharacterImages();
-        });
-
-        p2Select.addEventListener("change", function() {
-            console.log('P2 selection changed');
-            updateCharacterImages();
-        });
-
-        console.log('Event listeners added');
+        // Listen for changes in character selections
+        document.getElementById("P1Select").addEventListener("change", updateCharacterImages);
+        document.getElementById("P2Select").addEventListener("change", updateCharacterImages);
     });
 </script>
 

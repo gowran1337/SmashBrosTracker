@@ -35,7 +35,9 @@ namespace SmashBrosTrackerGoran.Pages
         public async Task OnGetAsync()// get the characters and players from the database and put them in the list
         {
             Characters = await _context.Characters.ToListAsync();
-            Players = await _context.Players.ToListAsync();
+            Players = await _context.Players
+                .OrderByDescending(p => p.TotalStars)
+                .ToListAsync();
 
             Sessions = await _context.Sessions //get the sessions from the database
                .Include(s => s.SessionPlayers)

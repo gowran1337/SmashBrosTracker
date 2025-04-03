@@ -4,95 +4,150 @@
     ViewData["Title"] = "Session Page";
 }
 
-<h1>Session Details</h1>
-
 @if (Model.Player1 != null && Model.Player2 != null && Model.Player1Character != null && Model.Player2Character != null)
 {
-    <div>
-        <h2>Player 1</h2>
-        <p>Name: @Model.Player1.Name</p>
-        <p>Character: @Model.Player1Character.Name</p>
+    <div class="session-page">
+        <h1>Session Details</h1>
+        
+        <div class="content-wrapper">
+            <div class="player-section">
+                <h2>Player 1</h2>
+                <p>Name: @Model.Player1.Name</p>
+                <p>Character: @Model.Player1Character.Name</p>
+                <p id="p1kebabdisplay"></p>
+            </div>
 
-        <button id="addp1Kebab">Add Kebab</button>
-        <p id="p1kebabdisplay"></p>
+            <div class="character-display">
+                <div class="character-images">
+                    <img src="/images/characters/@(Model.Player1Character.Name.ToLower().Replace("captain falcon", "captainfalcon")).png" 
+                         alt="@Model.Player1Character.Name" 
+                         class="character-image">
+                    <img src="/images/vs.png" alt="VS" class="vs-image">
+                    <img src="/images/characters/@(Model.Player2Character.Name.ToLower().Replace("captain falcon", "captainfalcon")).png" 
+                         alt="@Model.Player2Character.Name" 
+                         class="character-image">
+                </div>
+            </div>
 
+            <div class="player-section">
+                <h2>Player 2</h2>
+                <p>Name: @Model.Player2.Name</p>
+                <p>Character: @Model.Player2Character.Name</p>
+                <p id="p2kebabdisplay"></p>
+            </div>
+        </div>
+
+        <div class="scoreboard-section">
+            <p id="scoreboardDisplay"></p>
+        </div>
+
+        <div class="bottom-controls">
+            <button type="button" id="addp1Kebab" class="kebab-button">
+                <span class="kebab-icon">🍖</span>
+                <span class="kebab-label">P1 Kebab</span>
+            </button>
+
+            <form method="post" asp-page-handler="AddSession" class="session-form">
+                <input type="hidden" asp-for="Player1Id" />
+                <input type="hidden" asp-for="Player2Id" />
+                <input type="hidden" asp-for="Player1CharacterId" />
+                <input type="hidden" asp-for="Player2CharacterId" />
+                <input type="hidden" id="p1kebabCount" name="Player1Kebabs" asp-for="Player1Kebabs" value="0">
+                <input type="hidden" id="p2kebabCount" name="Player2Kebabs" asp-for="Player2Kebabs" value="0">
+
+                <div class="form-content">
+                    <div class="stars-section">
+                        <div class="star-input">
+                            <label for="Player1Stars">Player 1 Stars</label>
+                            <input type="number" id="Player1Stars" name="Player1Stars" asp-for="Player1Stars" required>
+                        </div>
+                        <div class="star-input">
+                            <label for="Player2Stars">Player 2 Stars</label>
+                            <input type="number" id="Player2Stars" name="Player2Stars" asp-for="Player2Stars" required>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn-primary" id="endsessionbtn">End session</button>
+                </div>
+            </form>
+
+            <button type="button" id="addp2Kebab" class="kebab-button">
+                <span class="kebab-icon">🍖</span>
+                <span class="kebab-label">P2 Kebab</span>
+            </button>
+        </div>
     </div>
-    <div>
-        <h2>Player 2</h2>
-        <p>Name: @Model.Player2.Name</p>
-        <p>Character: @Model.Player2Character.Name</p>
-
-        <button id="addp2Kebab">Add Kebab</button>
-        <p id="p2kebabdisplay"></p>
-
-    </div>
-    <div>
-        <h3>kebabs</h3>
-        <p id="scoreboardDisplay"></p>
-    </div>
-
-    <form method="post" asp-page-handler="AddSession">
-        <input type="hidden" asp-for="Player1Id" />
-        <input type="hidden" asp-for="Player2Id" />
-        <input type="hidden" asp-for="Player1CharacterId" />
-        <input type="hidden" asp-for="Player2CharacterId" />
-        <input type="hidden" id="p1kebabCount" name="Player1Kebabs" asp-for="Player1Kebabs" value="0">
-        <input type="hidden" id="p2kebabCount" name="Player2Kebabs" asp-for="Player2Kebabs" value="0">
-
-        <label for="Player1Stars">Player 1 Stars</label>
-        <input type="number" id="Player1Stars" name="Player1Stars" asp-for="Player1Stars" required>
-
-        <label for="Player2Stars">Player 2 Stars</label>
-        <input type="number" id="Player2Stars" name="Player2Stars" asp-for="Player2Stars" required>
-        <button type="submit">End session</button>
-    </form>
-
-   
 }
 else
 {
-    <p>Error: Invalid player or character selection. Please try again.</p>
-    <a asp-page="Index" class="btn btn-primary">Return to Index</a>
+    <div class="session-page">
+        <h1>Error</h1>
+        <p>Invalid player or character selection. Please try again.</p>
+        <a asp-page="Index" class="btn btn-primary">Return to Index</a>
+    </div>
 }
 
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        let p1kebab = 0;
+        let p2kebab = 0;
 
+        const p1Button = document.getElementById("addp1Kebab");
+        const p2Button = document.getElementById("addp2Kebab");
+        const p1Display = document.getElementById("p1kebabdisplay");
+        const p2Display = document.getElementById("p2kebabdisplay");
+        const scoreboardDisplay = document.getElementById("scoreboardDisplay");
+        const p1KebabInput = document.getElementById("p1kebabCount");
+        const p2KebabInput = document.getElementById("p2kebabCount");
+
+        function updateKebabs() {
+            p1Display.textContent = p1kebab + " kebabs";
+            p2Display.textContent = p2kebab + " kebabs";
+            scoreboardDisplay.textContent = `Score: ${p1kebab} - ${p2kebab}`;
+            p1KebabInput.value = p1kebab;
+            p2KebabInput.value = p2kebab;
+        }
+
+        p1Button.addEventListener("click", function() {
+            p1kebab++;
+            updateKebabs();
+        });
+
+        p2Button.addEventListener("click", function() {
+            p2kebab++;
+            updateKebabs();
+        });
+
+        updateKebabs();
+    });
+</script>
 
 <script>
-     document.addEventListener("DOMContentLoaded", function() {
-    let p1kebab = 0;
-    let p2kebab = 0;
+       document.addEventListener("DOMContentLoaded", function() {
+        const starInput1 = document.getElementById("Player1Stars");
+        const starInput2 = document.getElementById("Player2Stars");
+        const endButton = document.getElementById("endsessionbtn"); // Fixed selector (added #)
 
-    const p1Button = document.getElementById("addp1Kebab");
-    const p2Button = document.getElementById("addp2Kebab");
-    const p1Display = document.getElementById("p1kebabdisplay");
-    const p2Display = document.getElementById("p2kebabdisplay");
-    const scoreboardDisplay = document.getElementById("scoreboardDisplay");
-    // Get the hidden inputs
-    const p1KebabInput = document.getElementById("p1kebabCount");
-    const p2KebabInput = document.getElementById("p2kebabCount");
+        function isPositiveInteger(value) {
+            // Check for whole numbers ≥ 1 (no decimals, no negatives, no zero)
+            return /^[1-9]\d*$/.test(value.trim());
+        }
 
-    function updateKebabs() {
-        p1Display.textContent = p1kebab + " kebabs";
-        p2Display.textContent = p2kebab + " kebabs";
-        scoreboardDisplay.textContent = `Score:${p1kebab} - ${p2kebab}`;
-        // Update the hidden form inputs
-        p1KebabInput.value = p1kebab;
-        p2KebabInput.value = p2kebab;
-    }
+        function checkInputs() {
+            const val1 = starInput1.value;
+            const val2 = starInput2.value;
 
-    p1Button.addEventListener("click", function() {
-        p1kebab++;
-        updateKebabs();
+            // Enable button only if BOTH inputs are valid positive integers
+            endButton.disabled = !(isPositiveInteger(val1) && isPositiveInteger(val2));
+        }
+
+        // Live validation as user types
+        starInput1.addEventListener("input", checkInputs);
+        starInput2.addEventListener("input", checkInputs);
+
+        // Initial check
+        checkInputs();
     });
 
-    p2Button.addEventListener("click", function() {
-        p2kebab++;
-        updateKebabs();
-    });
-
-    // Initialize displays
-    updateKebabs();
-});
 </script>
 
 
