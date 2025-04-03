@@ -49,22 +49,11 @@ namespace SmashBrosTrackerGoran.Pages
                 Player1 = await _dbContext.Players.FindAsync(Player1Id);
                 Player2 = await _dbContext.Players.FindAsync(Player2Id);
 
-                // If either player doesn't exist, redirect to index
-                if (Player1 == null || Player2 == null)
-                {
-                    return RedirectToPage("Index");
-                }
-
                 // Check if characters exist
                 Player1Character = await _dbContext.Characters.FindAsync(Player1CharacterId);
                 Player2Character = await _dbContext.Characters.FindAsync(Player2CharacterId);
 
-                // If either character doesn't exist, redirect to index
-                if (Player1Character == null || Player2Character == null)
-                {
-                    return RedirectToPage("Index");
-                }
-
+            
                 return Page();
             }
             catch (Exception)
@@ -77,15 +66,10 @@ namespace SmashBrosTrackerGoran.Pages
         {
             try
             {
-                // First verify that both players exist
+                
                 var player1 = await _dbContext.Players.FindAsync(Player1Id);
                 var player2 = await _dbContext.Players.FindAsync(Player2Id);
 
-                if (player1 == null || player2 == null)
-                {
-                    // Handle the case where one or both players don't exist
-                    return RedirectToPage("Index");
-                }
 
                 // First create the session
                 var session = new Session
