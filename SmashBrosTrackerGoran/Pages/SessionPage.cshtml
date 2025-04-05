@@ -7,6 +7,12 @@
 @if (Model.Player1 != null && Model.Player2 != null && Model.Player1Character != null && Model.Player2Character != null)
 {
     <div class="session-page">
+        <div class="return-button-container">
+            <a asp-page="Index" class="return-button">
+                <span class="return-icon">←</span>
+                <span class="return-text">Return to Home</span>
+            </a>
+        </div>
         <h1>Session Details</h1>
         
         <div class="content-wrapper">

@@ -1018,3 +1018,54 @@ th {
         transform: scale(1);
     }
 }
+
+.return-button-container {
+    position: fixed;
+    top: 2rem;
+    left: 2rem;
+    z-index: 100;
+}
+
+.return-button {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(255, 255, 255, 0.1);
+    border: 2px solid #ffcc00;
+    border-radius: 8px;
+    padding: 0.75rem 1.5rem;
+    color: #ffcc00;
+    text-decoration: none;
+    font-weight: bold;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.return-button:hover {
+    background: rgba(255, 204, 0, 0.1);
+    transform: translateX(-5px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+}
+
+.return-icon {
+    font-size: 1.2rem;
+}
+
+.return-text {
+    font-size: 1rem;
+}
+
+@media (max-width: 768px) {
+    .return-button-container {
+        position: relative;
+        top: 0;
+        left: 0;
+        width: 100%;
+        margin-bottom: 1rem;
+    }
+    
+    .return-button {
+        width: 100%;
+        justify-content: center;
+    }
+}
